@@ -1,0 +1,18 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  overflow: hidden;
+}
+
+#canvas {
+  appearance: none;
+  user-select: none;
+  outline: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+}

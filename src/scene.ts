@@ -240,7 +240,6 @@ directionalLight.shadow.camera.left = -11.5;
 directionalLight.shadow.bias = -0.002;
 directionalLight.shadow.normalBias = 0.066;
 directionalLight.target.position.set(11.5, -1, -9);
-directionalLight.target.updateMatrixWorld();
 
 const directionalLightCameraHelper = new THREE.CameraHelper(
   directionalLight.shadow.camera
@@ -297,7 +296,31 @@ directionalLightPositionTweaks
   .max(50)
   .listen();
 
-scene.add(ambientLight, directionalLight, directionalLightCameraHelper);
+const directionalLightTargetPositionTweaks =
+  directionalLightTweaks.addFolder("Target position");
+directionalLightTargetPositionTweaks.close();
+
+directionalLightTargetPositionTweaks
+  .add(directionalLight.target.position, "x")
+  .min(-50)
+  .max(50)
+  .listen();
+directionalLightTargetPositionTweaks
+  .add(directionalLight.target.position, "y")
+  .min(-50)
+  .max(50)
+  .listen();
+directionalLightTargetPositionTweaks
+  .add(directionalLight.target.position, "z")
+  .min(-50)
+  .max(50)
+  .listen();
+scene.add(
+  ambientLight,
+  directionalLight,
+  directionalLight.target,
+  directionalLightCameraHelper
+);
 
 /* RUN */
 animate();

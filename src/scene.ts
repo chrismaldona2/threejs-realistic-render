@@ -52,7 +52,7 @@ const scene = new THREE.Scene();
 
 // ENVIRONMENT MAP
 const environmentTweaks = gui.addFolder("Environment");
-scene.environmentIntensity = 0.5;
+scene.environmentIntensity = 0.9;
 
 const textureLoader = new THREE.TextureLoader();
 textureLoader.load("./envmaps/garage/4k.webp", (environmentMap) => {
@@ -69,7 +69,7 @@ textureLoader.load("./envmaps/garage/4k.webp", (environmentMap) => {
 environmentTweaks
   .add(scene, "environmentIntensity")
   .min(0)
-  .max(1.25)
+  .max(3)
   .step(0.01)
   .listen();
 
@@ -80,7 +80,7 @@ const camera = new THREE.PerspectiveCamera(
   0.1,
   1000
 );
-camera.position.set(10, 14, 15);
+camera.position.set(15, 17, 22.6);
 scene.add(camera);
 
 /* RENDERER */
@@ -120,6 +120,7 @@ orbitControls.target.set(0, 8, 0);
 orbitControls.maxPolarAngle = Math.PI / 2.5;
 orbitControls.maxDistance = 31;
 orbitControls.maxTargetRadius = 10;
+orbitControls.addEventListener("change", () => console.log(camera.position));
 
 /* ANIMATION */
 const timer = new Timer();

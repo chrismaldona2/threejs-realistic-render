@@ -1,7 +1,6 @@
 import * as THREE from "three";
 import Experience from "./Experience";
 import Sizes from "./utils/Sizes";
-import Debug from "./utils/Debug";
 
 class Renderer {
   experience: Experience;
@@ -23,23 +22,24 @@ class Renderer {
     this.instance.toneMapping = THREE.ACESFilmicToneMapping;
     this.instance.toneMappingExposure = 1.7;
 
-    // tweaks
-    const { gui } = Debug.getInstance();
-    const tweaks = gui.addFolder("Renderer");
+    // TWEAKS
+    if (this.experience.debug) {
+      const tweaks = this.experience.debug.gui.addFolder("Renderer");
 
-    tweaks.add(this.instance, "toneMapping").options({
-      none: THREE.NoToneMapping,
-      linear: THREE.LinearToneMapping,
-      reinhard: THREE.ReinhardToneMapping,
-      cineon: THREE.CineonToneMapping,
-      "ACES-filmic": THREE.ACESFilmicToneMapping,
-    });
-    tweaks
-      .add(this.instance, "toneMappingExposure")
-      .min(0)
-      .max(5)
-      .step(0.01)
-      .listen();
+      tweaks.add(this.instance, "toneMapping").options({
+        none: THREE.NoToneMapping,
+        linear: THREE.LinearToneMapping,
+        reinhard: THREE.ReinhardToneMapping,
+        cineon: THREE.CineonToneMapping,
+        "ACES-filmic": THREE.ACESFilmicToneMapping,
+      });
+      tweaks
+        .add(this.instance, "toneMappingExposure")
+        .min(0)
+        .max(5)
+        .step(0.01)
+        .listen();
+    }
   }
 
   resize() {

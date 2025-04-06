@@ -14,7 +14,7 @@ interface Items {
 
 class Resources extends EventEmitter {
   sources: Source[];
-  loaders!: Loaders;
+  loaders: Loaders;
   toLoad: number;
   loaded: number;
   items: Items;
@@ -27,39 +27,46 @@ class Resources extends EventEmitter {
     this.loaded = 0;
     this.items = {};
 
-    this.setLoaders();
-    this.load();
+    this.loaders = this.initializeLoaders();
+    this.startLoading();
   }
 
-  setLoaders() {
+  initializeLoaders() {
     const dracoLoader = new DRACOLoader();
-    dracoLoader.setDecoderPath("./draco/");
+    dracoLoader.setDecoderPath("./draco/"); // → MAKE SURE THE DRACO FOLDER PATH IS CORRECT
+
     const gltfLoader = new GLTFLoader();
     gltfLoader.setDRACOLoader(dracoLoader);
 
     const textureLoader = new THREE.TextureLoader();
-
-    this.loaders = {
-      gltfLoader,
-      textureLoader,
-    };
+    return { gltfLoader, textureLoader };
   }
 
-  load() {
+  startLoading() {
     this.sources.forEach((source) => {
       switch (source.type) {
         case "gltfModel":
-          this.loaders.gltfLoader.load(source.path as string, (gltf) => {
-            this.items[source.name] = gltf;
-            this.sourceLoaded(source, gltf);
-          });
+          this.loaders.gltfLoader.load(
+            source.path as string,
+            (gltf) => {
+              this.items[source.name] = gltf;
+              this.sourceLoaded(source, gltf);
+            },
+            undefined,
+            (error) => console.error(`Failed to load ${source.name}:`, error)
+          );
           break;
 
         case "texture":
-          this.loaders.textureLoader.load(source.path as string, (texture) => {
-            this.items[source.name] = texture;
-            this.sourceLoaded(source, texture);
-          });
+          this.loaders.textureLoader.load(
+            source.path as string,
+            (texture) => {
+              this.items[source.name] = texture;
+              this.sourceLoaded(source, texture);
+            },
+            undefined,
+            (error) => console.error(`Failed to load ${source.name}:`, error)
+          );
           break;
       }
     });
@@ -72,6 +79,13 @@ class Resources extends EventEmitter {
     if (this.loaded === this.toLoad) {
       this.trigger("ready");
     }
+  }
+
+  getItem<T>(name: string): T {
+    if (!this.items[name]) {
+      console.warn(`Resource "${name}" not found`);
+    }
+    return this.items[name] as T;
   }
 }
 

@@ -3,13 +3,34 @@ import GUI from "lil-gui";
 class Debug {
   static instance: Debug;
   gui!: GUI;
+  private keydownHandler!: (event: KeyboardEvent) => void;
 
   constructor() {
     if (Debug.instance) {
       return Debug.instance;
     }
-    this.gui = new GUI({ title: "Tweaks", width: 375 });
     Debug.instance = this;
+    this.gui = new GUI({ title: "Tweaks" });
+    this.gui.hide();
+    this.handleToggle();
+  }
+
+  show() {
+    this.gui.show();
+  }
+
+  handleToggle() {
+    this.keydownHandler = (event: KeyboardEvent) => {
+      if (event.key.toLowerCase() === "h") {
+        this.gui.show(this.gui._hidden);
+      }
+    };
+    window.addEventListener("keydown", this.keydownHandler);
+  }
+
+  dispose() {
+    window.removeEventListener("keydown", this.keydownHandler);
+    this.gui.destroy();
   }
 
   static getInstance(): Debug {

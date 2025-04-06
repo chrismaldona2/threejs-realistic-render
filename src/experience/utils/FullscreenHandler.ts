@@ -1,14 +1,24 @@
 // @ts-nocheck
 class FullscreenHandler {
   canvas: HTMLCanvasElement;
+  handleDblClick: () => void;
+  handleKeydown: (event: KeyboardEvent) => void;
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
 
-    this.canvas.addEventListener("dblclick", () => this.toggleFullscreen());
-    window.addEventListener("keydown", (event) => {
+    this.handleDblClick = () => this.toggleFullscreen();
+    this.handleKeydown = (event: KeyboardEvent) => {
       if (event.key.toLowerCase() === "f") this.toggleFullscreen();
-    });
+    };
+
+    this.canvas.addEventListener("dblclick", this.handleDblClick);
+    window.addEventListener("keydown", this.handleKeydown);
+  }
+
+  dispose() {
+    this.canvas.removeEventListener("dblclick", this.handleDblClick);
+    window.removeEventListener("keydown", this.handleKeydown);
   }
 
   goFullscreen() {

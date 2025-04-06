@@ -4,6 +4,7 @@ export interface Source {
   path: string | string[];
 }
 
+/* FILES WHICH WILL BE LOADED BY THE RESOURCES CLASS (./utils/Resources.ts) */
 const sources: Source[] = [
   {
     name: "garageEnvMap",

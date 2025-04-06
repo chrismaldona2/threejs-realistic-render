@@ -1,14 +1,17 @@
 import Experience from "../Experience.js";
 import Environment from "./Environment.js";
-import ObjectGroup from "./ObjectGroup.js";
+import RoomElements from "./RoomElements.js";
 
 export default class World {
+  environment!: Environment;
+  roomElements!: RoomElements;
+
   constructor() {
     const context = Experience.getInstance();
 
     context.resources.on("ready", () => {
-      new Environment();
-      new ObjectGroup();
+      this.roomElements = new RoomElements();
+      this.environment = new Environment();
     });
   }
 }

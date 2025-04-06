@@ -8,6 +8,7 @@ import Debug from "./utils/Debug";
 import Resources from "./utils/Resources";
 import sources from "./sources";
 import World from "./world/World";
+import InstructionBanner from "./utils/InstructionBanner";
 
 class Experience {
   private static instance: Experience | null = null;
@@ -19,6 +20,7 @@ class Experience {
   time!: Time;
   camera!: Camera;
   renderer!: Renderer;
+  fullscreenHandler!: FullscreenHandler;
   world!: World;
 
   constructor(canvas: HTMLCanvasElement) {
@@ -28,8 +30,7 @@ class Experience {
     Experience.instance = this;
 
     this.canvas = canvas;
-    new FullscreenHandler(this.canvas);
-
+    this.fullscreenHandler = new FullscreenHandler(this.canvas);
     this.debug = new Debug();
     this.sizes = new Sizes();
     this.scene = new THREE.Scene();
@@ -39,6 +40,10 @@ class Experience {
     this.time = new Time();
     this.world = new World();
 
+    this.resources.on("ready", () => {
+      new InstructionBanner();
+      if (this.debug) this.debug.show();
+    });
     this.sizes.on("resize", () => this.resize());
     this.time.on("tick", () => this.update());
   }
@@ -51,6 +56,39 @@ class Experience {
   update() {
     this.camera.update();
     this.renderer.update();
+  }
+
+  destroy() {
+    // REMOVE EVENT LISTENERS
+    this.sizes.dispose();
+    this.time.off("tick");
+    this.resources.off("ready");
+    this.fullscreenHandler.dispose();
+
+    //  GEOMETRIES AND MATERIALS DISPOSE
+    this.scene.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        child.geometry.dispose();
+
+        for (const key in child.material) {
+          const value = child.material[key];
+          if (value && typeof value.dispose === "function") {
+            value.dispose();
+          }
+        }
+      }
+    });
+
+    // CONTROL DISPOSE
+    this.camera.orbitControls.dispose();
+
+    // RENDERER DISPOSE
+    this.renderer.instance.dispose();
+
+    // DEBUG UI DISPOSE
+    if (this.debug.gui) {
+      this.debug.dispose();
+    }
   }
 
   static getInstance(): Experience {

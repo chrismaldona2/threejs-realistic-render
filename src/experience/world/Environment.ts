@@ -16,7 +16,8 @@ class Environment {
     this.scene = context.scene;
     this.resources = context.resources;
 
-    this.envmap = context.resources.items["garageEnvMap"] as THREE.Texture;
+    /* ENVMAP FOR SCENE ENVIRONMENT  */
+    this.envmap = context.resources.getItem("garageEnvMap");
     this.envmap.mapping = THREE.EquirectangularReflectionMapping;
     this.envmap.colorSpace = THREE.SRGBColorSpace;
 
@@ -27,14 +28,19 @@ class Environment {
   }
 
   setEnvironmentMap() {
+    /* SCENE ENVIRONMENT SETUP (JUST FOR LIGHTNING) */
     this.scene.environment = this.envmap;
     this.scene.environmentIntensity = 0.9;
 
-    const tweaks = this.debug.gui.addFolder("Environment");
-    tweaks.add(this.scene, "environmentIntensity").min(0).max(3).step(0.001);
+    /* ENVIRONMENT TWEAKS */
+    if (this.debug) {
+      const tweaks = this.debug.gui.addFolder("Environment");
+      tweaks.add(this.scene, "environmentIntensity").min(0).max(3).step(0.001);
+    }
   }
 
   setGroundedSkyBox() {
+    /* GROUND SKY BOX ENVIRONMENT (FOR BACKGROUND IMAGE) */
     const skybox = new GroundedSkybox(this.envmap, 24, 80, 512);
     skybox.position.y = 12;
     skybox.scale.setScalar(0.5);
@@ -42,19 +48,26 @@ class Environment {
   }
 
   setAmbientLight() {
+    /* AMBIENT LIGHT INITIALIZATION */
     const params = {
       color: 0xcfaa26,
     };
     const ambientLight = new THREE.AmbientLight(params.color, 1);
-    const tweaks = this.debug.gui.addFolder("Ambient light");
-    tweaks.addColor(params, "color").onChange(() => {
-      ambientLight.color.set(params.color);
-    });
-    tweaks.add(ambientLight, "intensity").min(0).max(3).step(0.001);
+
+    /* AMBIENT LIGHT TWEAKS */
+    if (this.debug) {
+      const tweaks = this.debug.gui.addFolder("Ambient light");
+      tweaks.addColor(params, "color").onChange(() => {
+        ambientLight.color.set(params.color);
+      });
+      tweaks.add(ambientLight, "intensity").min(0).max(3).step(0.001);
+    }
+
     this.scene.add(ambientLight);
   }
 
   setDirectionalLight() {
+    /* DIRECTIONAL LIGHT INITIALIZATION */
     const params = {
       color: 0xf5ca7f,
     };
@@ -75,72 +88,73 @@ class Environment {
     const helper = new THREE.CameraHelper(directionalLight.shadow.camera);
     helper.visible = false;
 
-    const tweaks = this.debug.gui.addFolder("Directional Light");
+    /* DIRECTIONAL LIGHT TWEAKS */
+    if (this.debug) {
+      const tweaks = this.debug.gui.addFolder("Directional Light");
+      tweaks.addColor(params, "color").onChange(() => {
+        directionalLight.color.set(params.color);
+      });
+      tweaks.add(directionalLight, "intensity").min(0).max(16).step(0.01);
+      tweaks
+        .add(directionalLight.shadow, "bias")
+        .min(-0.05)
+        .max(0.05)
+        .step(0.001)
+        .name("shadow bias");
 
-    tweaks.addColor(params, "color").onChange(() => {
-      directionalLight.color.set(params.color);
-    });
-    tweaks.add(directionalLight, "intensity").min(0).max(16).step(0.01);
+      tweaks
+        .add(directionalLight.shadow, "normalBias")
+        .min(-0.05)
+        .max(0.15)
+        .step(0.001)
+        .name("shadow normal bias");
 
-    tweaks
-      .add(directionalLight.shadow, "bias")
-      .min(-0.05)
-      .max(0.05)
-      .step(0.001)
-      .name("shadow bias");
+      tweaks.add(helper, "visible").name("helper");
 
-    tweaks
-      .add(directionalLight.shadow, "normalBias")
-      .min(-0.05)
-      .max(0.15)
-      .step(0.001)
-      .name("shadow normal bias");
+      const positionTweaks = tweaks.addFolder("Position");
+      positionTweaks.close();
 
-    tweaks.add(helper, "visible").name("helper");
+      positionTweaks
+        .add(directionalLight.position, "x")
+        .min(-50)
+        .max(50)
+        .step(0.001)
+        .listen();
+      positionTweaks
+        .add(directionalLight.position, "y")
+        .min(-50)
+        .max(50)
+        .step(0.001)
+        .listen();
+      positionTweaks
+        .add(directionalLight.position, "z")
+        .min(-50)
+        .max(50)
+        .step(0.001)
+        .listen();
 
-    const positionTweaks = tweaks.addFolder("Position");
-    positionTweaks.close();
+      const targetPositionTweaks = tweaks.addFolder("Target position");
+      targetPositionTweaks.close();
 
-    positionTweaks
-      .add(directionalLight.position, "x")
-      .min(-50)
-      .max(50)
-      .step(0.001)
-      .listen();
-    positionTweaks
-      .add(directionalLight.position, "y")
-      .min(-50)
-      .max(50)
-      .step(0.001)
-      .listen();
-    positionTweaks
-      .add(directionalLight.position, "z")
-      .min(-50)
-      .max(50)
-      .step(0.001)
-      .listen();
-
-    const targetPositionTweaks = tweaks.addFolder("Target position");
-    targetPositionTweaks.close();
-
-    targetPositionTweaks
-      .add(directionalLight.target.position, "x")
-      .min(-50)
-      .max(50)
-      .step(0.001)
-      .listen();
-    targetPositionTweaks
-      .add(directionalLight.target.position, "y")
-      .min(-50)
-      .max(50)
-      .step(0.001)
-      .listen();
-    targetPositionTweaks
-      .add(directionalLight.target.position, "z")
-      .min(-50)
-      .max(50)
-      .step(0.001)
-      .listen();
+      targetPositionTweaks
+        .add(directionalLight.target.position, "x")
+        .min(-50)
+        .max(50)
+        .step(0.001)
+        .listen();
+      targetPositionTweaks
+        .add(directionalLight.target.position, "y")
+        .min(-50)
+        .max(50)
+        .step(0.001)
+        .listen();
+      targetPositionTweaks
+        .add(directionalLight.target.position, "z")
+        .min(-50)
+        .max(50)
+        .step(0.001)
+        .listen();
+    }
 
     this.scene.add(directionalLight, directionalLight.target, helper);
   }

@@ -44,3 +44,24 @@ body {
   --width: min(95%, 400px);
   right: 0.5rem !important;
 }
+
+.spinner {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  box-sizing: border-box;
+  border-top: 4px solid #fff;
+  border-left: 4px solid #fff;
+  border-right: 4px solid #ff00;
+  animation: spin 0.7s infinite linear;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

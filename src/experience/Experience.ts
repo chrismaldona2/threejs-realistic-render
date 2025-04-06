@@ -9,6 +9,7 @@ import Resources from "./utils/Resources";
 import sources from "./sources";
 import World from "./world/World";
 import InstructionBanner from "./utils/InstructionBanner";
+import SpinnerLoader from "./utils/SpinnerLoader";
 
 class Experience {
   private static instance: Experience | null = null;
@@ -29,6 +30,8 @@ class Experience {
     }
     Experience.instance = this;
 
+    const spinnerLoader = new SpinnerLoader();
+
     this.canvas = canvas;
     this.fullscreenHandler = new FullscreenHandler(this.canvas);
     this.debug = new Debug();
@@ -41,6 +44,7 @@ class Experience {
     this.world = new World();
 
     this.resources.on("ready", () => {
+      spinnerLoader.destroy();
       new InstructionBanner();
       if (this.debug) this.debug.show();
     });

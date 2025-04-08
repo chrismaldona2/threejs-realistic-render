@@ -1,91 +1,69 @@
 import * as THREE from "three";
-import { DRACOLoader, GLTF, GLTFLoader } from "three/examples/jsm/Addons.js";
-import { Source } from "../sources";
+import sources, { Source } from "../data/sources";
 import EventEmitter from "./EventEmitter";
+import { DRACOLoader, GLTF, GLTFLoader } from "three/examples/jsm/Addons.js";
 
-interface Loaders {
-  gltfLoader: GLTFLoader;
-  textureLoader: THREE.TextureLoader;
-}
-
-interface Items {
-  [key: string]: THREE.Texture | GLTF;
-}
+export type SupportedFile = THREE.Texture | GLTF;
+export type SupportedLoader = THREE.TextureLoader | GLTFLoader;
 
 class Resources extends EventEmitter {
   sources: Source[];
-  loaders: Loaders;
-  toLoad: number;
-  loaded: number;
-  items: Items;
+  items: Record<Source["name"], SupportedFile>;
+  loaders: Record<Source["type"], SupportedLoader>;
+  loadedItems: number;
 
-  constructor(sources: Source[]) {
+  constructor() {
     super();
-
     this.sources = sources;
-    this.toLoad = this.sources.length;
-    this.loaded = 0;
     this.items = {};
-
-    this.loaders = this.initializeLoaders();
+    this.loaders = this.intializeLoaders();
+    this.loadedItems = 0;
     this.startLoading();
   }
 
-  initializeLoaders() {
+  intializeLoaders() {
     const dracoLoader = new DRACOLoader();
     dracoLoader.setDecoderPath("./draco/"); // → MAKE SURE THE DRACO FOLDER PATH IS CORRECT
-
     const gltfLoader = new GLTFLoader();
     gltfLoader.setDRACOLoader(dracoLoader);
-
     const textureLoader = new THREE.TextureLoader();
-    return { gltfLoader, textureLoader };
+
+    return { texture: textureLoader, gltf: gltfLoader };
   }
 
   startLoading() {
-    this.sources.forEach((source) => {
+    sources.forEach((source) => {
       switch (source.type) {
-        case "gltfModel":
-          this.loaders.gltfLoader.load(
-            source.path as string,
-            (gltf) => {
-              this.items[source.name] = gltf;
-              this.sourceLoaded(source, gltf);
-            },
-            undefined,
-            (error) => console.error(`Failed to load ${source.name}:`, error)
+        case "gltf":
+          this.loaders.gltf.load(source.path, (gltf) =>
+            this.sourceLoaded(source, gltf)
           );
           break;
-
         case "texture":
-          this.loaders.textureLoader.load(
-            source.path as string,
-            (texture) => {
-              this.items[source.name] = texture;
-              this.sourceLoaded(source, texture);
-            },
-            undefined,
-            (error) => console.error(`Failed to load ${source.name}:`, error)
+          this.loaders.texture.load(source.path, (texture) =>
+            this.sourceLoaded(source, texture)
           );
           break;
       }
     });
   }
 
-  sourceLoaded(source: Source, file: Items[string]) {
+  sourceLoaded(source: Source, file: SupportedFile) {
     this.items[source.name] = file;
+    this.loadedItems++;
 
-    this.loaded++;
-    if (this.loaded === this.toLoad) {
+    if (this.sources.length === this.loadedItems) {
       this.trigger("ready");
     }
   }
 
-  getItem<T>(name: string): T {
-    if (!this.items[name]) {
-      console.warn(`Resource "${name}" not found`);
+  getItem(name: Source["name"]): SupportedFile | undefined {
+    const item = this.items[name];
+    if (!item) {
+      console.warn(`Resource "${name}" was not found in Resources.`);
+      return undefined;
     }
-    return this.items[name] as T;
+    return item;
   }
 }
 

@@ -8,7 +8,7 @@ class Environment {
   scene: THREE.Scene;
   debug: Debug;
   resources: Resources;
-  envmap: THREE.Texture;
+  envmap?: THREE.Texture;
 
   constructor() {
     const context = Experience.getInstance();
@@ -17,7 +17,17 @@ class Environment {
     this.resources = context.resources;
 
     /* ENVMAP FOR SCENE ENVIRONMENT  */
-    this.envmap = context.resources.getItem("garageEnvMap");
+
+    const envmapTexture = this.resources.getItem("garageEnvMap");
+
+    if (!(envmapTexture instanceof THREE.Texture)) {
+      console.error(
+        "Expected a THREE.Texture for 'garageEnvMap', but got something else."
+      );
+      return;
+    }
+
+    this.envmap = envmapTexture;
     this.envmap.mapping = THREE.EquirectangularReflectionMapping;
     this.envmap.colorSpace = THREE.SRGBColorSpace;
 
@@ -29,7 +39,7 @@ class Environment {
 
   setEnvironmentMap() {
     /* SCENE ENVIRONMENT SETUP (JUST FOR LIGHTNING) */
-    this.scene.environment = this.envmap;
+    if (this.envmap) this.scene.environment = this.envmap;
     this.scene.environmentIntensity = 0.9;
 
     /* ENVIRONMENT TWEAKS */
@@ -41,10 +51,13 @@ class Environment {
 
   setGroundedSkyBox() {
     /* GROUND SKY BOX ENVIRONMENT (FOR BACKGROUND IMAGE) */
-    const skybox = new GroundedSkybox(this.envmap, 24, 80, 512);
-    skybox.position.y = 12;
-    skybox.scale.setScalar(0.5);
-    this.scene.add(skybox);
+    if (this.envmap) {
+      const skybox = new GroundedSkybox(this.envmap, 24, 80, 512);
+      skybox.position.y = 12;
+      skybox.scale.setScalar(0.5);
+      skybox.name = "GroundedSkyBox";
+      this.scene.add(skybox);
+    }
   }
 
   setAmbientLight() {

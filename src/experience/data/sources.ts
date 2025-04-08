@@ -1,8 +1,10 @@
-export interface Source {
+export type SourceType = "texture" | "gltf";
+
+export type Source = {
   name: string;
-  type: "texture" | "gltfModel";
-  path: string | string[];
-}
+  type: SourceType;
+  path: string;
+};
 
 /* FILES WHICH WILL BE LOADED BY THE RESOURCES CLASS (./utils/Resources.ts) */
 const sources: Source[] = [
@@ -13,22 +15,22 @@ const sources: Source[] = [
   },
   {
     name: "appleModel",
-    type: "gltfModel",
+    type: "gltf",
     path: "./models/apple/apple.gltf",
   },
   {
     name: "carpetModel",
-    type: "gltfModel",
+    type: "gltf",
     path: "./models/carpet/carpet.gltf",
   },
   {
     name: "tableModel",
-    type: "gltfModel",
+    type: "gltf",
     path: "./models/table/table.gltf",
   },
   {
     name: "televisionModel",
-    type: "gltfModel",
+    type: "gltf",
     path: "./models/television/television.gltf",
   },
 ];

@@ -9,18 +9,25 @@ class Television {
     const { resources } = Experience.getInstance();
     const gltf = resources.getItem("televisionModel") as GLTF;
 
-    this.model = gltf.scene;
-    this.model.scale.setScalar(10);
-    this.model.position.set(1.5, 8.3, -7);
-    this.model.rotation.y = -Math.PI / 6;
+    if (gltf && gltf.scene instanceof THREE.Object3D) {
+      this.model = gltf.scene;
+      this.model.scale.setScalar(10);
+      this.model.position.set(1.5, 8.3, -7);
+      this.model.rotation.y = -Math.PI / 6;
 
-    // SHADOWS
-    this.model.traverse((object) => {
-      if (object instanceof THREE.Mesh) {
-        object.castShadow = true;
-        object.receiveShadow = true;
-      }
-    });
+      // SHADOWS
+      this.model.traverse((object) => {
+        if (object instanceof THREE.Mesh) {
+          object.castShadow = true;
+          object.receiveShadow = true;
+        }
+      });
+    } else {
+      console.error(
+        "Invalid 'televisionModel' resource. Expected a GLTF object with a scene property."
+      );
+      this.model = new THREE.Object3D();
+    }
   }
 }
 

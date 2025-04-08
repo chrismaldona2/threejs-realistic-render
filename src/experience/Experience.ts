@@ -6,7 +6,6 @@ import Renderer from "./Renderer";
 import Time from "./utils/Time";
 import Debug from "./utils/Debug";
 import Resources from "./utils/Resources";
-import sources from "./sources";
 import World from "./world/World";
 import InstructionBanner from "./utils/InstructionBanner";
 import SpinnerLoader from "./utils/SpinnerLoader";
@@ -37,7 +36,7 @@ class Experience {
     this.debug = new Debug();
     this.sizes = new Sizes();
     this.scene = new THREE.Scene();
-    this.resources = new Resources(sources);
+    this.resources = new Resources();
     this.camera = new Camera();
     this.renderer = new Renderer();
     this.time = new Time();
@@ -83,7 +82,7 @@ class Experience {
       }
     });
 
-    // CONTROL DISPOSE
+    // CONTROLS DISPOSE
     this.camera.orbitControls.dispose();
 
     // RENDERER DISPOSE

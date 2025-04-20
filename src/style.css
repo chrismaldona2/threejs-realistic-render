@@ -27,7 +27,7 @@ body {
 #instruction-banner {
   z-index: 10;
   position: fixed;
-  bottom: 0;
+  bottom: 1rem;
   width: 100%;
   padding: 0.75rem;
   text-align: center;
@@ -36,8 +36,11 @@ body {
     "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
     sans-serif;
   font-size: 1rem;
-
   transition: opacity 1s ease-in-out;
+}
+
+#instruction-banner a {
+  color: #fff;
 }
 
 .lil-gui {

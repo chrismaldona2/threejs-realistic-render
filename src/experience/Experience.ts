@@ -3,7 +3,7 @@ import Sizes from "./utils/Sizes";
 import FullscreenHandler from "./utils/FullscreenHandler";
 import Camera from "./Camera";
 import Renderer from "./Renderer";
-import Time from "./utils/Time";
+import Timer from "./utils/Timer";
 import Debug from "./utils/Debug";
 import Resources from "./utils/Resources";
 import World from "./world/World";
@@ -17,7 +17,7 @@ class Experience {
   canvas!: HTMLCanvasElement;
   resources!: Resources;
   scene!: THREE.Scene;
-  time!: Time;
+  timer!: Timer;
   camera!: Camera;
   renderer!: Renderer;
   fullscreenHandler!: FullscreenHandler;
@@ -39,16 +39,16 @@ class Experience {
     this.resources = new Resources();
     this.camera = new Camera();
     this.renderer = new Renderer();
-    this.time = new Time();
+    this.timer = new Timer();
     this.world = new World();
 
-    this.resources.on("ready", () => {
+    this.resources.on("loaded", () => {
       spinnerLoader.destroy();
       new InstructionBanner();
       if (this.debug) this.debug.show();
     });
     this.sizes.on("resize", () => this.resize());
-    this.time.on("tick", () => this.update());
+    this.timer.on("tick", () => this.update());
   }
 
   resize() {
@@ -64,8 +64,8 @@ class Experience {
   destroy() {
     // REMOVE EVENT LISTENERS
     this.sizes.dispose();
-    this.time.off("tick");
-    this.resources.off("ready");
+    this.timer.off("tick");
+    this.resources.off("loaded");
     this.fullscreenHandler.dispose();
 
     //  GEOMETRIES AND MATERIALS DISPOSE
@@ -84,10 +84,8 @@ class Experience {
 
     // CONTROLS DISPOSE
     this.camera.orbitControls.dispose();
-
     // RENDERER DISPOSE
     this.renderer.instance.dispose();
-
     // DEBUG UI DISPOSE
     if (this.debug.gui) {
       this.debug.dispose();

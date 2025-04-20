@@ -7,7 +7,7 @@ class Television {
 
   constructor() {
     const { resources } = Experience.getInstance();
-    const gltf = resources.getItem("televisionModel") as GLTF;
+    const gltf = resources.getAsset("televisionModel") as GLTF;
 
     if (gltf && gltf.scene instanceof THREE.Object3D) {
       this.model = gltf.scene;

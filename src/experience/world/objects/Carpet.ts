@@ -7,7 +7,7 @@ class Carpet {
 
   constructor() {
     const { resources } = Experience.getInstance();
-    const gltf = resources.getItem("carpetModel") as GLTF;
+    const gltf = resources.getAsset("carpetModel") as GLTF;
 
     if (gltf && gltf.scene instanceof THREE.Object3D) {
       this.model = gltf.scene;

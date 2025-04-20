@@ -7,7 +7,7 @@ class Table {
 
   constructor() {
     const { resources } = Experience.getInstance();
-    const gltf = resources.getItem("tableModel") as GLTF;
+    const gltf = resources.getAsset("tableModel") as GLTF;
 
     if (gltf && gltf.scene instanceof THREE.Object3D) {
       this.model = gltf.scene;

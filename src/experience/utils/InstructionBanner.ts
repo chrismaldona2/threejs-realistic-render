@@ -5,6 +5,7 @@ class InstructionBanner {
     message.innerHTML = `
       <p>Press 'F' or double-click to toggle fullscreen mode</p>
       <p>Press 'H' to hide/show the tweaks panel</p>
+      <a href="https://github.com/chrismaldona2/threejs-realistic-render.git" target="_blank">Source Code</a>
     `;
     message.style.opacity = "0";
 

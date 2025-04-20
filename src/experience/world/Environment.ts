@@ -17,8 +17,7 @@ class Environment {
     this.resources = context.resources;
 
     /* ENVMAP FOR SCENE ENVIRONMENT  */
-
-    const envmapTexture = this.resources.getItem("garageEnvMap");
+    const envmapTexture = this.resources.getAsset("garageEnvMap");
 
     if (!(envmapTexture instanceof THREE.Texture)) {
       console.error(
